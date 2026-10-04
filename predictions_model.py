@@ -100,17 +100,15 @@ outer_f1_scores = []
 # }
 
 param_grid = {
-    # "classifier__max_depth": [None],
-        # "classifier__min_samples_leaf": [2],
-        # "classifier__min_samples_split": [2, 5],
-        "classifier__ccp_alpha": [0.00001, 0.000001],
-        "classifier__criterion": ["gini"]}
+    "classifier__max_depth": [10, 20, None],
+        # "classifier__min_samples_leaf": [1, 2, 4],
+        "classifier__ccp_alpha": [0.00001]}
     #     ,"classifier__criterion": ["gini", "entropy", "log_loss"]
     #    }
 # treeClassifier = tree.DecisionTreeClassifier(max_depth=depth, random_state=83, 
         # criterion="log_loss", min_samples_leaf=4, class_weight=None)
-tree_classifier = tree.DecisionTreeClassifier(criterion="gini", min_samples_leaf=1,
-                                               random_state=83, class_weight=None)
+tree_classifier = tree.DecisionTreeClassifier(criterion="gini", ccp_alpha=1e-5,
+                                    min_samples_split=2, random_state=83, class_weight=None)
 model = Pipeline(steps=[("preprocess", preprocessor), ("classifier", tree_classifier)])
 thresholds = np.linspace(0, 1, 1001)
 
@@ -132,7 +130,7 @@ for fold, (train_idx, val_idx) in enumerate(cv_outer.split(X, y), start=1):
 
     predict_start = time.perf_counter()
     out_fold_probs = cross_val_predict(search.best_estimator_, X_train_out, 
-                            y_train_out, cv=cv_inner, method="predict_proba", n_jobs=-1)[:, 1]
+                            y_train_out, cv=cv_inner, method="predict_proba", n_jobs=-1, verbose=2)[:, 1]
     print(f"Cross-validation predictions finished in "f"{time.perf_counter() - predict_start:.1f}s", flush=True)
     threshold_f1s = [f1_score(y_train_out, out_fold_probs >= threshold) 
                      for threshold in thresholds]
