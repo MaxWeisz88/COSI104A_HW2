@@ -42,32 +42,6 @@ keep_cols = ["amount", "oldbalanceOrg", "newbalanceOrig"]
 X = train_data.drop(columns=["isFraud"])
 y = train_data["isFraud"]
 
-# X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, 
-#                     stratify=y, random_state=83)
-
-# X_fit, X_thresh, y_fit, y_thresh = train_test_split(X_train, y_train, 
-#                     test_size=0.25, stratify=y_train, random_state=83)
-# for column in X:
-#     plt.figure()
-#     for label, group in train_data.groupby("isFraud"):
-#         plt.hist(group[column], bins=40, alpha=0.5, density=True,
-#                  label=f"isFraud = {label}")
-#     plt.title(f"{column} by fraud label")
-#     plt.xlabel(f"log(1 + {column})")
-#     plt.ylabel("Proportion")
-#     plt.legend()
-#     plt.show()
-
-# fraud_rate = train_data.groupby("type")["isFraud"].mean()
-# fraud_rate.plot(kind="bar")
-# plt.title("Fraud rate by transaction type")
-# plt.ylabel("Fraction marked as fraud")
-# plt.show()
-
-
-
-# print(numerical_cols)
-# print(categorical_cols)
 
 preprocessor = ColumnTransformer(transformers=[
     ("num", "passthrough", X.select_dtypes(include=["number"]).columns),
@@ -101,7 +75,7 @@ outer_f1_scores = []
 
 param_grid = {
     "classifier__max_depth": [10, 20, None],
-        # "classifier__min_samples_leaf": [1, 2, 4],
+        "classifier__min_samples_leaf": [1, 2, 4],
         "classifier__ccp_alpha": [0.00001]}
     #     ,"classifier__criterion": ["gini", "entropy", "log_loss"]
     #    }
